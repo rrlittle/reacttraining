@@ -1,8 +1,13 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import React from "react";
+import ReactDom from "react-dom";
 
-import { HelloWorld } from './components/hello-world';
+class ColorTool extends React.Component {
+  state = {};
+	render() {
+		return React.createElement('h1', null, "Color Tool");
+	}
+}
 
-ReactDOM.render(<HelloWorld />, document.querySelector('main'));
-
-
+let node = document.querySelector("main");
+let tool = React.createElement(ColorTool);
+ReactDom.render(tool, node);
