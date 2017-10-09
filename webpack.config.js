@@ -1,34 +1,34 @@
-const path = require('path');
-const webpack = require('webpack');
+const path = require("path");
+const webpack = require("webpack");
 
 // load the web server settings from package.json
-const { devServer } = require('./package.json');
+const { devServer } = require("./package.json");
 
 // used to copy content from the src folder to the dist folder
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 // configure the environment object for development mode
-// const ENV = process.env.ENV = process.env.NODE_ENV = 'development';
-const ENV = process.env.ENV = process.env.NODE_ENV = 'production';
-const MINIFY = true;
+const ENV = (process.env.ENV = process.env.NODE_ENV = "development");
+// const ENV = process.env.ENV = process.env.NODE_ENV = 'production';
+// const MINIFY = true;
+const MINIFY = false;
 
 // source and distribution folder paths
-const srcFolder = 'client';
-const destFolder = 'client-dist';
+const srcFolder = "client";
+const destFolder = "client-dist";
 const srcFolderPath = path.join(__dirname, srcFolder);
-const jsFolderPath = path.join(srcFolderPath, 'js');
+const jsFolderPath = path.join(srcFolderPath, "js");
 
 // export webpack configuration
 const webpackConfig = {
-
   // root folder for entry point files
   context: jsFolderPath,
 
   // entry points for the three bundles, order does not matter
   entry: {
-    'app': ['whatwg-fetch', './app.js']
+    app: ["whatwg-fetch", "./app.js"]
   },
 
   // allows us to require modules using import { someExport } from './my-module';
@@ -36,28 +36,26 @@ const webpackConfig = {
   // in the list, it can be omitted from the import root is an absolute path to
   // the folder containing our application modules
   resolve: {
-    extensions: [
-      '.js', '.jsx', '.json'
-    ], // order matters, resolves left to right
-    modules: [
-      jsFolderPath, path.join(__dirname, 'node_modules')
-    ]
+    extensions: [".js", ".jsx", ".json"], // order matters, resolves left to right
+    modules: [jsFolderPath, path.join(__dirname, "node_modules")]
   },
 
   module: {
     rules: [
       {
         test: /\.(woff2?|svg)$/,
-        use: [{
-          loader: 'url-loader',
-          options: {
-            limit: 10000
-          },
-        }],
+        use: [
+          {
+            loader: "url-loader",
+            options: {
+              limit: 10000
+            }
+          }
+        ]
       },
       {
         test: /\.(ttf|eot)$/,
-        use: ['file-loader'],
+        use: ["file-loader"]
       },
 
       // process all JavaScript files through the Babel preprocessor this enables
@@ -67,26 +65,26 @@ const webpackConfig = {
         exclude: /node_modules/,
         use: [
           {
-            loader: 'babel-loader',
+            loader: "babel-loader",
             options: {
               presets: [
                 // use the latest ES2017 features, but disable modules
                 // Webpack 2 provides module support
-                ['latest', { modules: false }],
+                ["latest", { modules: false }],
                 // react is required for JSX support
-                'react',
+                "react"
               ],
               plugins: [
                 // verifies queries against GraphQL schema
-                'relay',
+                "relay",
                 // enable support for decorators
-                'transform-decorators-legacy',
+                "transform-decorators-legacy",
                 // enable support for class properties
-                'transform-class-properties',
+                "transform-class-properties",
                 // enable support for do expressions
-                'transform-do-expressions',
+                "transform-do-expressions",
                 // enable support for object rest/spread
-                'transform-object-rest-spread',
+                "transform-object-rest-spread"
               ]
             }
           }
@@ -95,12 +93,7 @@ const webpackConfig = {
       // transpiles global SASS stylesheets loader order is executed right to left
       {
         test: /\.(scss|css)$/,
-        use: [
-          'style-loader',
-          'css-loader',
-          'postcss-loader',
-          'sass-loader'
-        ]
+        use: ["style-loader", "css-loader", "postcss-loader", "sass-loader"]
       }
     ]
   },
@@ -109,19 +102,19 @@ const webpackConfig = {
     // copy image files, and the index.html file directly when they are changed
     new CopyWebpackPlugin([
       {
-        from: path.join(srcFolderPath, 'images'),
-        to: 'images'
+        from: path.join(srcFolderPath, "images"),
+        to: "images"
       }
     ]),
     // configure the file to have the bundle script elements injected this is almost
     // always the main html for the initial loading of the site
     new HtmlWebpackPlugin({
-      template: path.join(srcFolderPath, 'index.html')
+      template: path.join(srcFolderPath, "index.html")
     }),
     // setup environment variables
     new webpack.DefinePlugin({
-      'process.env': {
-        'NODE_ENV': JSON.stringify(ENV)
+      "process.env": {
+        NODE_ENV: JSON.stringify(ENV)
       }
     })
   ],
@@ -133,8 +126,8 @@ const webpackConfig = {
   // is the name of the files, where [name] is the name of each entry point
   output: {
     path: path.join(__dirname, destFolder),
-    publicPath: '/',
-    filename: '[name].js'
+    publicPath: "/",
+    filename: "[name].js"
   },
 
   // use the webpack dev server to serve up the web application
@@ -143,24 +136,24 @@ const webpackConfig = {
   // use full source maps this specific setting value is required to set
   // breakpoints in the TypeScript in the web browser for development other source
   // map settings do not allow debugging in browser and vscode
-  devtool: 'source-map'
+  devtool: "source-map"
 };
 
 // only minify code when in production
-if (ENV === 'production' && MINIFY) {
-  webpackConfig
-    .plugins
-    .push(new UglifyJsPlugin({
+if (ENV === "production" && MINIFY) {
+  webpackConfig.plugins.push(
+    new UglifyJsPlugin({
       sourceMap: true,
       uglifyOptions: {
         ecma: 8,
         mangle: { keep_classnames: true },
         output: { beautify: true },
         compress: {
-          warnings: false,
-        },
-      },
-    }));
+          warnings: false
+        }
+      }
+    })
+  );
 }
 
 module.exports = webpackConfig;

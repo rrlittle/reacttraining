@@ -113,6 +113,8 @@
     "resolve-url-loader": "2.1.0",
     "rxjs": "5.4.3",
     "sass-loader": "6.0.6",
+    "semantic-ui-css": "^2.2.12",
+    "semantic-ui-react": "^0.74.2",
     "style-loader": "0.18.2",
     "url-loader": "0.5.9",
     "whatwg-fetch": "2.0.3"
